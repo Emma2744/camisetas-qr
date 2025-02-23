@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram do Dono da Camiseta</title>
+</head>
+<body>
+    <h1>Instagram do Dono da Camiseta</h1>
+    <p id="instagramUser">Carregando...</p>
+    <a id="instagramLink" target="_blank">Ir para o Instagram</a>
+
+    <!-- Firebase App e Firestore (versão compatível com navegadores) -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Configurações do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDH8JmNVKa3a_We4GilK4ovv9hrnBfljQc",
+  	    authDomain: "camiseta-cbda8.firebaseapp.com",
+            projectId: "camiseta-cbda8",
+            storageBucket: "camiseta-cbda8.firebasestorage.app",
+            messagingSenderId: "1030304420196",
+            appId: "1:1030304420196:web:afda6316a536e5dbc0aa71",
+            measurementId: "G-P44B4G4BP2"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Buscar o @ do Instagram
+        db.collection('users').get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const username = doc.data().username;
+                document.getElementById('instagramUser').textContent = `@${username}`;
+                document.getElementById('instagramLink').href = `https://instagram.com/${username}`;
+                document.getElementById('instagramLink').textContent = `Ir para o Instagram de @${username}`;
+            });
+        }).catch((error) => {
+            console.error('Erro ao buscar: ', error);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar Instagram</title>
+</head>
+<body>
+    <h1>Configuração do Instagram</h1>
+
+    <!-- Formulário de Login -->
+    <h2>Login</h2>
+    <form id="loginForm">
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
+        <label for="password">Senha:</label>
+        <input type="password" id="password" placeholder="Sua senha" required>
+        <button type="submit">Entrar</button>
+    </form>
+    <p id="loginMessage"></p>
+
+    <!-- Formulário de Cadastro -->
+    <h2>Cadastro</h2>
+    <form id="signupForm">
+        <label for="newEmail">E-mail:</label>
+        <input type="email" id="newEmail" placeholder="seuemail@exemplo.com" required>
+        <label for="newPassword">Senha:</label>
+        <input type="password" id="newPassword" placeholder="Sua senha" required>
+        <button type="submit">Cadastrar</button>
+    </form>
+    <p id="signupMessage"></p>
+
+    <!-- Formulário de Configuração do Instagram (aparece apenas quando logado) -->
+    <div id="instagramForm" style="display: none;">
+        <h2>Configurar Instagram</h2>
+        <form id="instagramConfigForm">
+            <label for="instagramUser">Seu @ do Instagram:</label>
+            <input type="text" id="instagramUser" placeholder="Ex: seuusuario" required>
+            <button type="submit">Salvar</button>
+        </form>
+        <p id="message"></p>
+    </div>
+
+    <!-- Firebase App, Firestore e Auth (versão compatível com navegadores) -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+
+    <script>
+        // Configurações do Firebase
+        const firebaseConfig = {
+           apiKey: "AIzaSyDH8JmNVKa3a_We4GilK4ovv9hrnBfljQc",
+ 	   authDomain: "camiseta-cbda8.firebaseapp.com",
+ 	   projectId: "camiseta-cbda8",
+ 	   storageBucket: "camiseta-cbda8.firebasestorage.app",
+ 	   messagingSenderId: "1030304420196",
+ 	   appId: "1:1030304420196:web:afda6316a536e5dbc0aa71",
+ 	   measurementId: "G-P44B4G4BP2"
+        };
+
+        // Inicializar Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Login
+        const loginForm = document.getElementById('loginForm');
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    document.getElementById('loginMessage').textContent = 'Login realizado com sucesso!';
+                })
+                .catch((error) => {
+                    document.getElementById('loginMessage').textContent = 'Erro ao fazer login: ' + error.message;
+                });
+        });
+
+        // Cadastro
+        const signupForm = document.getElementById('signupForm');
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('newEmail').value;
+            const password = document.getElementById('newPassword').value;
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => {
+                    document.getElementById('signupMessage').textContent = 'Cadastro realizado com sucesso!';
+                })
+                .catch((error) => {
+                    document.getElementById('signupMessage').textContent = 'Erro ao cadastrar: ' + error.message;
+                });
+        });
+
+        // Verificar se o usuário está logado
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Usuário logado
+                document.getElementById('instagramForm').style.display = 'block';
+            } else {
+                // Usuário não logado
+                document.getElementById('instagramForm').style.display = 'none';
+            }
+        });
+
+        // Salvar o @ do Instagram
+        const instagramForm = document.getElementById('instagramConfigForm');
+        instagramForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('instagramUser').value;
+            const userId = auth.currentUser.uid; // ID do usuário logado
+
+            // Salvar o @ do Instagram no Firestore
+            db.collection('users').doc(userId).set({ username: user })
+                .then(() => {
+                    document.getElementById('message').textContent = 'Instagram salvo com sucesso!';
+                })
+                .catch((error) => {
+                    console.error('Erro ao salvar: ', error);
+                });
+        });
+    </script>
+</body>
+</html>
